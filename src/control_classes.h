@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 
-
 class product
 {
 private:
@@ -14,6 +13,28 @@ public:
     ~product();
 };
 
+class order {
+public:
+    enum order_status
+    {
+        processing,
+        completed,
+        cancelled
+    };
+
+    order();
+    ~order();
+
+    order_status get_status();
+    void set_status(order_status new_status);
+    
+
+private:
+    std::vector<product> products;
+    order_status status;
+    
+};
+
 class toat
 {
 private:
@@ -21,7 +42,7 @@ private:
 public:
     toat();
     ~toat();
-    
+
 };
 
 
