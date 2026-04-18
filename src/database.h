@@ -2,13 +2,13 @@
 #define DATABASE_H
 
 #include <string>
-#include <sql.h>
-#include <sqlext.h>
+
+//#include <occi.h>
 
 class Database {
 private:
-    SQLHENV env;
-    SQLHDBC dbc;
+    //oracle::occi::Environment* env;
+    //oracle::occi::Connection* dbc;
 
 public:
     Database();
