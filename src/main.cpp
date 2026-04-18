@@ -32,15 +32,15 @@ int main()
 
     // insert stock into database
     for (auto p : stock) {
-        db.insertProduct(p.getName(), p.getAisle(), randQty(gen));
+        db.insertProduct(p.getName(), p.getId(), randQty(gen));
     }
 
   
     // ORDER GENERATION
   
     order o;
-    o.add_product(stock[0]);
-    o.add_product(stock[1]);
+    o.addProduct(stock[0]);
+    o.addProduct(stock[1]);
 
     db.insertOrder(1, "processing");
 
@@ -50,12 +50,12 @@ int main()
 
     int toatId = 1;
 
-    for (auto p : o.get_products()) {
-        t.add_product(p);
-        db.insertToat(toatId, p.getName(), p.getAisle());
+    for (auto p : o.getProducts()) {
+        t.addProduct(p);
+        db.insertToat(toatId, p.getName(), p.getId());
     }
 
-    o.set_status(order::completed);
+    o.setStatus(order::completed);
 
     db.execute("UPDATE orders SET status='completed' WHERE id=1");
 
