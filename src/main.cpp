@@ -31,7 +31,7 @@ int main()
     };
 
     // insert stock into database
-    for (auto& p : stock) {
+    for (auto p : stock) {
         db.insertProduct(p.getName(), p.getAisle(), randQty(gen));
     }
 
@@ -50,7 +50,7 @@ int main()
 
     int toatId = 1;
 
-    for (const auto& p : o.get_products()) {
+    for (auto p : o.get_products()) {
         t.add_product(p);
         db.insertToat(toatId, p.getName(), p.getAisle());
     }

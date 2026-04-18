@@ -2,7 +2,7 @@ echo "Building project..."
 
 mkdir -p bin
 
-g++  src/*.cpp -o bin/main -lodbc
+g++  src/*.cpp -o bin/main # -lodbc
 
 if [ $? -ne 0 ]; then
     echo "Main build failed"

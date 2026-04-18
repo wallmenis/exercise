@@ -2,34 +2,45 @@
 #include <iostream>
 
 // PRODUCT
-product::product() : name(""), aisle(0) {}
+product::product() : name(""), id(0) {}
 
-product::product(std::string name, int aisle)
-    : name(name), aisle(aisle) {}
+product::product(std::string name, int id)
+{
+    this->name = name;
+    this->id = id;
+}
 
 product::~product() {}
 
-std::string product::getName() const { return name; }
-int product::getAisle() const { return aisle; }
+std::string product::getName()
+{
+    return name;
+}
+int product::getId()
+{
+    return id;
+}
 
 
 // ORDER
 order::order() : status(processing) {}
 order::~order() {}
 
-void order::add_product(const product& p) {
+void order::addProduct(product p) {
     products.push_back(p);
 }
 
-const std::vector<product>& order::get_products() const {
+std::vector<product> order::getProducts() 
+{
     return products;
 }
 
-order::order_status order::get_status() {
+order::order_status order::getStatus() {
     return status;
 }
 
-void order::set_status(order_status new_status) {
+void order::setStatus(order_status new_status)
+{
     status = new_status;
 }
 
@@ -38,13 +49,32 @@ void order::set_status(order_status new_status) {
 toat::toat() {}
 toat::~toat() {}
 
-void toat::add_product(const product& p) {
+void toat::addProduct(product p)
+{
     contents.push_back(p);
 }
 
-void toat::print() const {
+void toat::print() {
     std::cout << "Toat contents:\n";
-    for (const auto& p : contents) {
-        std::cout << p.getName() << " (Aisle " << p.getAisle() << ")\n";
+    for (auto p : contents) {
+        std::cout << p.getName() << " (ID" << p.getId() << ")\n";
+    }
+}
+
+// STOCK
+stock::stock() {}
+stock::~stock() {}
+stock::stock(std::vector<product_batch> batches) {
+    for (auto b : batches) {
+        inventory[b.getProductType().getId()] = b;
+    }
+}
+stock::stock(std::vector<product> products) {
+    std::unordered_map<int, int> map;
+    for (auto p : products){    // it is already initialized to 0, so we can just increment it (https://www.reddit.com/r/AskProgramming/comments/xhg6sw/do_value_for_keys_are_zero_by_default_in/)
+        map[p.getId()]++;
+    }
+    for (auto p : products) {
+        inventory[p.getId()] = product_batch(p, map[p.getId()]);
     }
 }
