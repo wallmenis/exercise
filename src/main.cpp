@@ -5,7 +5,7 @@
 #include <random>
 #include <occi.h>
 using namespace oracle::occi;
-using namespace std;
+//using namespace std;
 
 
 int main()
