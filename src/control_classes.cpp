@@ -20,7 +20,28 @@ int product::getId()
 {
     return id;
 }
+//////////////////////////////////////////////
+// PRODUCT BATCH GENERATION
 
+product_batch::product_batch() : quantity(0) {}
+
+product_batch::product_batch(product p, int qty)
+    : product_type(p), quantity(qty) {}
+
+product_batch::~product_batch() {}
+
+product product_batch::getProductType() {
+    return product_type;
+}
+
+int product_batch::getQuantity() {
+    return quantity;
+}
+
+product_batch product_batch::generateRandomBatch(product p) {
+    return product_batch(p, 1); 
+}
+////////////////////////////////////////////////////////
 
 // ORDER
 order::order() : status(processing) {}
@@ -78,3 +99,5 @@ stock::stock(std::vector<product> products) {
         inventory[p.getId()] = product_batch(p, map[p.getId()]);
     }
 }
+
+

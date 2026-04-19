@@ -89,7 +89,6 @@ public:
     stock(std::vector<product_batch> batches);
     stock(std::vector<product> products);
     ~stock();
-
     void addProduct(product p);
     bool removeProduct(product p);
 

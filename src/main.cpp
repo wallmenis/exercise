@@ -3,24 +3,47 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <occi.h>
+using namespace oracle::occi;
+using namespace std;
+
 
 int main()
 {
-    Database db;
+    std::cout << "PROGRAM STARTED\n";
 
-    std::string dsn =
-    
-    "Driver={OracleODBC};"
-    "Dbq=db.freesql.com:1521/23ai_34ui2;"
-    "Uid=TAGARA_IOANNA1_SCHEMA_J4HA5;"
-    "Pwd=YOUR_PASSWORD;";
+    try {
+        std::cout << "CREATING ENV...\n";
 
-    if (!db.connect(dsn)) return 1;
+        Environment *env = Environment::createEnvironment(Environment::DEFAULT);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> randQty(1, 10);
+        std::cout << "CONNECTING...\n";
 
+        Connection *conn = env->createConnection(
+            "TAGARA_IOANNA1_SCHEMA_J4HA5",
+            "GE59HPMrE02RSJ1886A$6TX9WVIXAH",
+            "db.freesql.com:1521/23ai_34ui2"
+        );
+
+        std::cout << "CONNECTED SUCCESSFULLY!\n";
+
+        env->terminateConnection(conn);
+        Environment::terminateEnvironment(env);
+
+        std::cout << "CLEAN EXIT\n";
+    }
+    catch (SQLException &e) {
+        std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "UNKNOWN ERROR\n";
+    }
+
+    std::cout << "PROGRAM END\n";
+    return 0;
+
+
+/*
 
     //STOCK GENERATION
 
@@ -62,4 +85,6 @@ int main()
     std::cout << "WAREHOUSE JOB COMPLETED\n";
 
     return 0;
+
+    */
 }
