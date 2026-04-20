@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <random>
 
 class product
 {
@@ -67,6 +68,10 @@ class product_batch     // this is a helper class for stock management, not used
 private:
     product product_type;
     int quantity;
+    static std::random_device rd;
+    static std::mt19937 gen;
+    static inline bool seedSet = false;
+    
 public:
     product_batch();
     product_batch(product p, int qty);
@@ -93,6 +98,7 @@ public:
     bool removeProduct(product p);
 
     std::vector<product> getProducts();
+    std::string getStockInsertStatement();
 };
 
 #endif

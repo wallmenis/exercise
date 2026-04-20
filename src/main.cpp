@@ -27,6 +27,7 @@ int main()
 
         std::cout << "CONNECTED SUCCESSFULLY!\n";
 
+
         env->terminateConnection(conn);
         Environment::terminateEnvironment(env);
 

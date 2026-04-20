@@ -2,7 +2,11 @@
 #include <iostream>
 
 // PRODUCT
-product::product() : name(""), id(0) {}
+product::product() 
+{   
+    name="";
+    id=0;
+}
 
 product::product(std::string name, int id)
 {
@@ -39,7 +43,14 @@ int product_batch::getQuantity() {
 }
 
 product_batch product_batch::generateRandomBatch(product p) {
-    return product_batch(p, 1); 
+    if (!seedSet)
+    {
+        seedSet = true;
+        gen.seed(rd());
+    }
+    std::uniform_int_distribution<> dis(1, 100);
+    int random_qty = dis(gen);
+    return product_batch(p, random_qty); 
 }
 ////////////////////////////////////////////////////////
 
@@ -100,4 +111,42 @@ stock::stock(std::vector<product> products) {
     }
 }
 
+void stock::addProduct(product p) {
+    if (inventory.find(p.getId()) != inventory.end()) {
+        inventory[p.getId()] = product_batch(p, inventory[p.getId()].getQuantity() + 1);
+    } else {
+        inventory[p.getId()] = product_batch(p, 1);
+    }
+}
 
+bool stock::removeProduct(product p) {
+    if (inventory.find(p.getId()) != inventory.end() && inventory[p.getId()].getQuantity() > 0) {
+        inventory[p.getId()] = product_batch(p, inventory[p.getId()].getQuantity() - 1);
+        return true;
+    }
+    return false;
+}
+
+std::vector<product> stock::getProducts() {
+    std::vector<product> products;
+    for (auto pair : inventory) {
+        for (int i = 0; i < pair.second.getQuantity(); i++) {
+            products.push_back(pair.second.getProductType());
+        }
+    }
+    return products;
+}
+
+std::string stock::getStockInsertStatement() {
+    std::string statement = "INSERT INTO stock (product_name, product_id, quantity) VALUES\n";
+    bool first = true;
+    for (auto pair : inventory) {
+        if (!first) {
+            statement += ",\n";
+        }
+        statement += "('" + pair.second.getProductType().getName() + "', " + std::to_string(pair.second.getProductType().getId()) + ", " + std::to_string(pair.second.getQuantity()) + ")";
+        first = false;
+    }
+    statement += ";";
+    return statement;
+}
