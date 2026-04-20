@@ -12,6 +12,13 @@ int main()
 {
     std::cout << "PROGRAM STARTED\n";
 
+    std::string test;
+
+    std::cin >> test;
+
+    std::cout << "TEST: " << test << "\n";
+    
+
     try {
         std::cout << "CREATING ENV...\n";
 

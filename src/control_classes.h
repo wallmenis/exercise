@@ -68,9 +68,8 @@ class product_batch     // this is a helper class for stock management, not used
 private:
     product product_type;
     int quantity;
-    static std::random_device rd;
-    static std::mt19937 gen;
-    static inline bool seedSet = false;
+    static inline std::random_device rd;
+    static inline std::mt19937 gen = std::mt19937(rd());
     
 public:
     product_batch();

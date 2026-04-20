@@ -43,11 +43,6 @@ int product_batch::getQuantity() {
 }
 
 product_batch product_batch::generateRandomBatch(product p) {
-    if (!seedSet)
-    {
-        seedSet = true;
-        gen.seed(rd());
-    }
     std::uniform_int_distribution<> dis(1, 100);
     int random_qty = dis(gen);
     return product_batch(p, random_qty); 

@@ -13,4 +13,4 @@ fi
 echo "Using: $CONTAINER_CMD"
 
 # Build the container image
-$CONTAINER_CMD build -t build_env .
+$CONTAINER_CMD build -t build_env . --progress=plain
