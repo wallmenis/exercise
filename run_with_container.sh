@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Check for podman or docker
-if command -v podman &> /dev/null; then
-    CONTAINER_CMD="podman"
-elif command -v docker &> /dev/null; then
+# Check for docker or podman
+if command -v docker &> /dev/null; then
     CONTAINER_CMD="docker"
+elif command -v podman &> /dev/null; then
+    CONTAINER_CMD="podman"
 else
     echo "Error: Neither podman nor docker is installed."
     exit 1
