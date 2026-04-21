@@ -98,6 +98,8 @@ public:
 
     std::vector<product> getProducts();
     std::string getStockInsertStatement();
+    
+    std::string getStockBatchesInString();
 };
 
 #endif

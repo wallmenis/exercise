@@ -145,3 +145,11 @@ std::string stock::getStockInsertStatement() {
     statement += ";";
     return statement;
 }
+
+std::string stock::getStockBatchesInString() {
+    std::string result;
+    for (auto pair : inventory) {
+        result += "Product: " + pair.second.getProductType().getName() + " (ID" + std::to_string(pair.second.getProductType().getId()) + "), Quantity: " + std::to_string(pair.second.getQuantity()) + "\n";
+    }
+    return result;
+}
