@@ -2,8 +2,9 @@
 #define DATABASE_H
 
 #include <string>
-
-//#include <occi.h>
+#include <nlohmann/json.hpp>
+#include "control_classes.h"
+#include <occi.h>
 
 class Database {
 private:
@@ -14,15 +15,17 @@ public:
     Database();
     ~Database();
 
-    bool connect(const std::string& dsn);
+    bool connect();
     void disconnect();
 
-    bool execute(const std::string& query);
+    bool updateStock(stock s);
+    stock getStock();
 
- 
-    bool insertProduct(const std::string& name, int aisle, int qty);
-    bool insertOrder(int orderId, const std::string& status);
-    bool insertToat(int toatId, const std::string& name, int aisle);
+    bool updateToat(toat t);
+    toat getToat();
+
+    bool updateOutOfStockProducts(std::vector<product> products);
+    std::vector<product> getOutOfStockProducts();
 };
 
 #endif

@@ -1,51 +1,25 @@
-/*
 #include "database.h"
+#include <fstream>
 #include <iostream>
-
+#include <sstream>
 
 Database::Database() {
+    nlohmann::json j;
+    std::string configuration;
+    std::stringstream configStream;
+    std::ifstream readStream("config.json");
+
+    if (!readStream.is_open()) {
+        std::cerr << "ERROR: Could not open config.json\n";
+        return;
+    }
+
+    configStream << readStream.rdbuf();
+    configuration = configStream.str();
     
+    j = nlohmann::json::parse(configuration);
+
+    readStream.close(); 
 }
 
-Database::~Database() {
-    disconnect();
-  
-}
-
-bool Database::connect(const std::string& dsn) {
-
-}
-
-void Database::disconnect() {
-   
-}
-
-bool Database::execute(const std::string& query) {
-    
-}
-bool Database::insertProduct(const std::string& name, int aisle, int qty) {
-    return execute(
-        "INSERT INTO products VALUES ('" +
-        name + "', " +
-        std::to_string(aisle) + ", " +
-        std::to_string(qty) + ")"
-    );
-}
-
-bool Database::insertOrder(int orderId, const std::string& status) {
-    return execute(
-        "INSERT INTO orders VALUES (" +
-        std::to_string(orderId) + ", '" +
-        status + "')"
-    );
-}
-
-bool Database::insertToat(int toatId, const std::string& name, int aisle) {
-    return execute(
-        "INSERT INTO toats VALUES (" +
-        std::to_string(toatId) + ", '" +
-        name + "', " +
-        std::to_string(aisle) + ")"
-    );
-}
-    */
+Database::~Database() {}
