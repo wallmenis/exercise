@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "control_classes.h"
 #include <occi.h>
+#include "logger.h"
 using namespace oracle::occi;
 
 
@@ -16,9 +17,10 @@ private:
     std::string password;
     std::string db_connection_string;
     bool isConnected;
+    std::shared_ptr<Logger> logger;
 
 public:
-    Database();
+    Database(std::shared_ptr<Logger> logger);
     ~Database();
 
     bool connect();

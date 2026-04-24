@@ -25,7 +25,7 @@ int main()
     logger.log("TUI OUTPUT: " + output);
 
     try {
-        Database db;
+        Database db(std::make_shared<Logger>(logger));
 
         std::cout << "CONNECTING...\n";
         logger.log("Attempting to connect to database...");

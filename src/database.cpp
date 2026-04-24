@@ -2,16 +2,19 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <nlohmann/json.hpp>
+
 using namespace oracle::occi;
 
-Database::Database() {
+Database::Database(std::shared_ptr<Logger> logger) {
     nlohmann::json j;
     std::string configuration;
     std::stringstream configStream;
     std::ifstream readStream("conf.json");
+    this->logger = logger;
 
     if (!readStream.is_open()) {
-        std::cerr << "ERROR: Could not open conf.json\n";
+        logger->log("ERROR: Could not open conf.json");
         return;
     }
 
@@ -53,6 +56,7 @@ bool Database::connect() {
     }
     catch (SQLException &e) {
         std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+        logger->log("Database connection failed: " + std::string(e.getMessage()));
         return false;
     }
 }
@@ -65,6 +69,7 @@ bool Database::disconnect() {
     }
     catch (SQLException &e) {
         std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+        logger->log("Database disconnection failed: " + std::string(e.getMessage()));
         return false;
     }
 }
@@ -72,7 +77,7 @@ bool Database::disconnect() {
 
 product_batch Database::getProductBatchById(int id, const std::string& table) {
     if (!isConnected) {
-        std::cerr << "ERROR: Not connected to database\n";
+        logger->log("ERROR: Not connected to database");
         return product_batch();
     }
     try {
@@ -87,12 +92,12 @@ product_batch Database::getProductBatchById(int id, const std::string& table) {
             return product_batch(product(name, id), quantity);
         } else {
             dbc->terminateStatement(stmt);
-            std::cerr << "ERROR: No product found with id " << id << " in table " << table << "\n";
+            logger->log("ERROR: No product found with id " + std::to_string(id) + " in table " + table);
             return product_batch();
         }
     }
     catch (SQLException &e) {
-        std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
         return product_batch();
     }
 }
@@ -100,7 +105,7 @@ product_batch Database::getProductBatchById(int id, const std::string& table) {
 bool Database::updateProductBatch(product_batch p, const std::string& table)
 {
     if (!isConnected) {
-        std::cerr << "ERROR: Not connected to database\n";
+        logger->log("ERROR: Not connected to database");
         return false;
     }
     try {
@@ -119,7 +124,7 @@ bool Database::updateProductBatch(product_batch p, const std::string& table)
         return true;
     }
     catch (SQLException &e) {
-        std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
         return false;
     }
 }
@@ -127,7 +132,7 @@ bool Database::updateProductBatch(product_batch p, const std::string& table)
 toat Database::getToatById(int id)
 {
     if (!isConnected) {
-        std::cerr << "ERROR: Not connected to database\n";
+        logger->log("ERROR: Not connected to database");
         return toat();
     }
     try {
@@ -149,13 +154,13 @@ toat Database::getToatById(int id)
         }
         dbc->terminateStatement(stmt);
         if (loops == 0) {
-            std::cerr << "ERROR: No toat found with id " << id << "\n";
+            logger->log("ERROR: No toat found with id " + std::to_string(id));
         }
         return toat();
         
     }
     catch (SQLException &e) {
-        std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
         return toat();
     }
 }
