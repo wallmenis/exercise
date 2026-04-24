@@ -1,5 +1,7 @@
 echo "Building project..."
 mkdir -p bin
+mkdir -p logs
+mkdir -p conf
 echo $ORACLE_LIBS
 echo $ORACLE_INCLUDES
 g++ src/*.cpp -I$ORACLE_INCLUDES -L$ORACLE_LIBS -locci -lclntsh -std=c++17 -o bin/main
