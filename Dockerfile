@@ -10,16 +10,23 @@ RUN dnf update -y && \
     dnf install -y json-devel && \
     dnf clean all
 
-ENV ORACLE_LIBS=/usr/lib/oracle/23/client64/lib
-ENV ORACLE_INCLUDES=/usr/include/oracle/23/client64
-
-RUN mkdir -p /app/src
-
 COPY ./src /app/src
 COPY ./build_script.sh /app/build_script.sh
 COPY ./conf /app/conf
 
+RUN dnf update -y && \ 
+    dnf clean all       # Update for a second time to ensure all packages are up to date and clean the cache again
+
 WORKDIR /app
+
+RUN useradd user && \
+    chown -R user:user /app  # Change ownership of the app directory to the non-root user
+
+# Switch to the non-root user for building and running the application
+USER user   
+
+ENV ORACLE_LIBS=/usr/lib/oracle/23/client64/lib
+ENV ORACLE_INCLUDES=/usr/include/oracle/23/client64
 
 RUN ./build_script.sh
 
