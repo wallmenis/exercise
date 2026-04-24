@@ -74,6 +74,98 @@ bool Database::disconnect() {
     }
 }
 
+bool Database::updateStock(stock s)
+{
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return false;
+    }
+    try {
+        for (auto p : s.getProductBatches()) {
+            std::string query = "UPDATE stock SET name = :name, quantity = :quantity WHERE id = :id";
+            if(getProductBatchById(p.getProductType().getId(), "stock").getQuantity() == 0) {
+                query = "INSERT INTO stock ( name, quantity, id) VALUES ( :name, :quantity, :id)";
+            }
+            logger->log("Executing query: " + query);
+            Statement* stmt = dbc->createStatement(query);
+            stmt->setString(1, p.getProductType().getName());
+            stmt->setInt(2, p.getQuantity());
+            stmt->setInt(3, p.getProductType().getId());
+            stmt->executeUpdate();
+            dbc->terminateStatement(stmt);
+        }
+        return true;
+    }
+    catch (SQLException &e) {
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
+        return false;
+    }
+}
+
+stock Database::getStock(int start, int count){
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return stock();
+    }
+    try {
+        std::string query = "SELECT name, id, quantity FROM stock OFFSET :1 ROWS FETCH NEXT :2 ROWS ONLY";
+        bool fetchAll = false;
+        if (start < 0 || count == 0) {
+            logger->log("ERROR: Invalid start or count parameters for getStock");
+            return stock();
+        }
+        if (count < 0)
+        {
+            query = "SELECT name, id, quantity FROM stock OFFSET :1 ROWS";
+            fetchAll = true;
+        }
+        
+        Statement* stmt = dbc->createStatement(query);
+        stmt->setInt(1, start);
+        if (!fetchAll) {
+            stmt->setInt(2, count);
+        }
+        logger->log("Executing query: " + query);
+        ResultSet* rs = stmt->executeQuery();
+
+        stock s;
+        while (rs->next()) {
+            std::string name = rs->getString(1);
+            int id = rs->getInt(2);
+            int quantity = rs->getInt(3);
+            s.addProductBatch(product_batch(product(name, id), quantity));
+        }
+        dbc->terminateStatement(stmt);
+        return s;
+    }
+    catch (SQLException &e) {
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
+        return stock();
+    }
+}
+
+bool Database::removeProductBatchById(int id, const std::string& table)
+{
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return false;
+    }
+    try {
+        std::string query = "DELETE FROM " + table + " WHERE id = :1";
+        logger->log("Executing query: " + query);
+        Statement* stmt = dbc->createStatement(query);
+        stmt->setInt(1, id);
+        stmt->executeUpdate();
+        dbc->terminateStatement(stmt);
+        return true;
+    }
+    catch (SQLException &e) {
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
+        return false;
+    }
+}
+
+
 bool Database::updateToat(toat t) {
     if (!isConnected) {
         logger->log("ERROR: Not connected to database");
@@ -81,7 +173,7 @@ bool Database::updateToat(toat t) {
     }
     try {
         if (getToatById(t.getId()).getId() == 0) { // if the toat doesn't exist, we insert it. Otherwise, we just update the contents.
-            std::string query = "INSERT INTO toats (id, order_id) VALUES (:id, :order_id)";
+            std::string query = "INSERT INTO toats (id, order_id) VALUES (:1, :2)";
             Statement* stmt = dbc->createStatement(query);
             stmt->setInt(1, t.getId());
             stmt->setInt(2, t.getOrderId());
@@ -90,9 +182,9 @@ bool Database::updateToat(toat t) {
             dbc->terminateStatement(stmt);
         }
         for (auto p : t.getContents()) {
-            std::string query = "UPDATE out_of_stock SET name = :name, quantity = :quantity WHERE id = :id AND toat_id = :toat_id";
+            std::string query = "UPDATE out_of_stock SET name = :1, quantity = :2 WHERE id = :3 AND toat_id = :4";
             if(getProductBatchById(p.getProductType().getId(), "out_of_stock").getQuantity() == 0) {
-                query = "INSERT INTO out_of_stock ( name, quantity, id, toat_id) VALUES ( :name, :quantity, :id, :toat_id)";
+                query = "INSERT INTO out_of_stock ( name, quantity, id, toat_id) VALUES ( :1, :2, :3, :4)";
             }
             logger->log("Executing query: " + query);
             Statement* stmt = dbc->createStatement(query);
@@ -117,7 +209,7 @@ product_batch Database::getProductBatchById(int id, const std::string& table) {
         return product_batch();
     }
     try {
-        std::string query = "SELECT name, quantity FROM " + table + " WHERE id = :id";
+        std::string query = "SELECT name, quantity FROM " + table + " WHERE id = :1";
         Statement* stmt = dbc->createStatement(query);
         stmt->setInt(1, id);
         logger->log("Executing query: " + query);
@@ -147,7 +239,7 @@ bool Database::updateProductBatch(product_batch p, const std::string& table)
         return false;
     }
     try {
-        std::string query = "UPDATE " + table + " SET name = :name, quantity = :quantity WHERE id = :id";
+        std::string query = "UPDATE " + table + " SET name = :1, quantity = :2 WHERE id = :3";
         Statement* stmt = dbc->createStatement(query);
         stmt->setString(1, p.getProductType().getName());
         stmt->setInt(2, p.getQuantity());
@@ -172,7 +264,7 @@ toat Database::getToatById(int id)
         return toat();
     }
     try {
-        std::string query = "SELECT id, name, quantity FROM out_of_stock WHERE toat_id = :id";
+        std::string query = "SELECT id, name, quantity FROM out_of_stock WHERE toat_id = :1";
         Statement* stmt = dbc->createStatement(query);
         stmt->setInt(1, id);
         logger->log("Executing query: " + query);
@@ -199,5 +291,25 @@ toat Database::getToatById(int id)
     catch (SQLException &e) {
         logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
         return toat();
+    }
+}
+
+bool Database::removeByToatId(int id){
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return false;
+    }
+    try {
+        std::string query = "DELETE FROM out_of_stock WHERE toat_id = :1";
+        logger->log("Executing query: " + query);
+        Statement* stmt = dbc->createStatement(query);
+        stmt->setInt(1, id);
+        stmt->executeUpdate();
+        dbc->terminateStatement(stmt);
+        return true;
+    }
+    catch (SQLException &e) {
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
+        return false;
     }
 }

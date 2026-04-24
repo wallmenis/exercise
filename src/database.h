@@ -27,15 +27,16 @@ public:
     bool disconnect();
 
     bool updateStock(stock s);
-    stock getStock();
+    stock getStock(int start, int count);
 
     bool updateToat(toat t);
-    toat getToat();
 
     product_batch getProductBatchById(int id, const std::string& table);
     bool updateProductBatch(product_batch p, const std::string& table);
+    bool removeProductBatchById(int id, const std::string& table);
 
     toat getToatById(int id);
+    bool removeByToatId(int id);
 
 };
 

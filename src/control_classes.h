@@ -105,10 +105,11 @@ public:
     stock(std::vector<product> products);
     ~stock();
     void addProduct(product p);
+    void addProductBatch(product_batch b);
     bool removeProduct(product p);
 
     std::vector<product> getProducts();
-    std::string getStockInsertStatement();
+    std::vector<product_batch> getProductBatches();
     
     std::string getStockBatchesInString();
 };

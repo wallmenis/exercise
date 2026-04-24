@@ -34,4 +34,6 @@ WORKDIR /app/bin
 
 RUN mkdir -p /app/logs
 
+# RUN ./random_data_generator
+
 CMD ["/app/bin/main"]

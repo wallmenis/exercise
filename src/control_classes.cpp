@@ -166,6 +166,15 @@ void stock::addProduct(product p) {
     }
 }
 
+void stock::addProductBatch(product_batch b) {
+    product p = b.getProductType();
+    if (inventory.find(p.getId()) != inventory.end()) {
+        inventory[p.getId()] = product_batch(p, inventory[p.getId()].getQuantity() + b.getQuantity());
+    } else {
+        inventory[p.getId()] = b;
+    }
+}
+
 bool stock::removeProduct(product p) {
     if (inventory.find(p.getId()) != inventory.end() && inventory[p.getId()].getQuantity() > 0) {
         inventory[p.getId()] = product_batch(p, inventory[p.getId()].getQuantity() - 1);
@@ -184,18 +193,13 @@ std::vector<product> stock::getProducts() {
     return products;
 }
 
-std::string stock::getStockInsertStatement() {
-    std::string statement = "INSERT INTO stock (product_name, product_id, quantity) VALUES\n";
-    bool first = true;
+std::vector<product_batch> stock::getProductBatches()
+{
+    std::vector<product_batch> batches;
     for (auto pair : inventory) {
-        if (!first) {
-            statement += ",\n";
-        }
-        statement += "('" + pair.second.getProductType().getName() + "', " + std::to_string(pair.second.getProductType().getId()) + ", " + std::to_string(pair.second.getQuantity()) + ")";
-        first = false;
+        batches.push_back(pair.second);
     }
-    statement += ";";
-    return statement;
+    return batches;
 }
 
 std::string stock::getStockBatchesInString() {

@@ -1,14 +1,16 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include "../database.h"
+#include "../control_classes.h"
+#include "../logger.h"
 
 int main()
 {
     // Create a random number generator
     std::random_device rd;  // Obtain a random number from hardware
     std::mt19937 gen(rd()); // Seed the generator
-    std::uniform_int_distribution<> distrNames(1, 10); // Define the range
-    std::uniform_int_distribution<> distrIsles(1, 20); // Define the range
+    std::uniform_int_distribution<> distrQuantities(1, 20); // Define the range
 
     std::string names[] = {
         "Shirt A", 
@@ -23,16 +25,14 @@ int main()
         "Gloves"
     };
 
-
-    std::cout << "Product, Isle" << std::endl;
+    Database db(std::make_shared<Logger>());
 
     // Generate and print 10 random numbers
     for (int i = 0; i < 10; ++i) {
-        std::cout << names[distrNames(gen) - 1] << ",";
-        std::cout << distrIsles(gen);
-        std::cout << std::endl;
+        db.updateStock(stock({product_batch(product(names[i], i), distrQuantities(gen))}));
     }
     
+    db.disconnect();
 
     return 0;
 }
