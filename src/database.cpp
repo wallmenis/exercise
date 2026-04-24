@@ -70,7 +70,7 @@ bool Database::disconnect() {
 }
 
 
-product_batch Database::getProductBatchById(int id, const string& table) {
+product_batch Database::getProductBatchById(int id, const std::string& table) {
     if (!isConnected) {
         std::cerr << "ERROR: Not connected to database\n";
         return product_batch();
@@ -84,7 +84,7 @@ product_batch Database::getProductBatchById(int id, const string& table) {
             std::string name = rs->getString(1);
             int quantity = rs->getInt(2);
             dbc->terminateStatement(stmt);
-            return product_batch(name, id, quantity);
+            return product_batch(product(name, id), quantity);
         } else {
             dbc->terminateStatement(stmt);
             std::cerr << "ERROR: No product found with id " << id << " in table " << table << "\n";
@@ -97,7 +97,7 @@ product_batch Database::getProductBatchById(int id, const string& table) {
     }
 }
 
-bool Database::updateProductBatch(product_batch p, const string& table)
+bool Database::updateProductBatch(product_batch p, const std::string& table)
 {
     if (!isConnected) {
         std::cerr << "ERROR: Not connected to database\n";
@@ -105,7 +105,7 @@ bool Database::updateProductBatch(product_batch p, const string& table)
     }
     try {
         std::string query = "UPDATE " + table + " SET name = :name, quantity = :quantity WHERE id = :id";
-        if (getProductBatchById(p, table).getProductType().getId() == 0)
+        if (getProductBatchById(p.getProductType().getId(), table).getProductType().getId() == 0)
         {
             query = "INSERT INTO " + table + " (name, quantity, id) VALUES (:name, :quantity, :id)";
         }
@@ -142,7 +142,9 @@ toat Database::getToatById(int id)
             std::string name = rs->getString(2);
             int quantity = rs->getInt(3);
             dbc->terminateStatement(stmt);
-            return toat(name, id, quantity);
+            toat t;
+            t.addProduct(product(name, toat_id));
+            return t;
             loops++;
         }
         dbc->terminateStatement(stmt);

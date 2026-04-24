@@ -30,9 +30,9 @@ public:
     bool updateToat(toat t);
     toat getToat();
 
-    product_batch getProductBatchById(int id, const string& table);
+    product_batch getProductBatchById(int id, const std::string& table);
 
-    bool updateProductBatch(product_batch p, const string& table);
+    bool updateProductBatch(product_batch p, const std::string& table);
 
     toat getToatById(int id);
     bool updateToatContents(toat t);

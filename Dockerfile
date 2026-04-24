@@ -20,4 +20,6 @@ WORKDIR /app
 
 RUN ./build_script.sh
 
+WORKDIR /app/bin
+
 CMD ["/app/bin/main"]

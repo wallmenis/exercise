@@ -20,28 +20,17 @@ int main()
     std::cout << "TUI OUTPUT:\n" << output << "\n";
 
     try {
-        std::cout << "CREATING ENV...\n";
-
-        oracle::occi::Environment *env = oracle::occi::Environment::createEnvironment(oracle::occi::Environment::DEFAULT);
+        Database db;
 
         std::cout << "CONNECTING...\n";
 
-        oracle::occi::Connection *conn = env->createConnection(
-            "TAGARA_IOANNA1_SCHEMA_J4HA5",
-            "GE59HPMrE02RSJ1886A$6TX9WVIXAH",
-            "db.freesql.com:1521/23ai_34ui2"
-        );
+        db.connect();
 
         std::cout << "CONNECTED SUCCESSFULLY!\n";
 
-
-        env->terminateConnection(conn);
-        oracle::occi::Environment::terminateEnvironment(env);
+        db.disconnect();
 
         std::cout << "CLEAN EXIT\n";
-    }
-    catch (oracle::occi::SQLException &e) {
-        std::cerr << "ORACLE ERROR: " << e.getMessage() << std::endl;
     }
     catch (...) {
         std::cerr << "UNKNOWN ERROR\n";
