@@ -13,4 +13,4 @@ fi
 echo "Using: $CONTAINER_CMD"
 
 # Run the container.
-$CONTAINER_CMD run -it build_env
+$CONTAINER_CMD run -v $(pwd)/logs:/app/logs -it build_env

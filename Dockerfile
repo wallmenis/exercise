@@ -22,4 +22,6 @@ RUN ./build_script.sh
 
 WORKDIR /app/bin
 
+RUN mkdir -p /app/logs
+
 CMD ["/app/bin/main"]
