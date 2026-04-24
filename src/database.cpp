@@ -10,7 +10,7 @@ Database::Database(std::shared_ptr<Logger> logger) {
     nlohmann::json j;
     std::string configuration;
     std::stringstream configStream;
-    std::ifstream readStream("conf.json");
+    std::ifstream readStream("../conf/conf.json");
     this->logger = logger;
 
     if (!readStream.is_open()) {

@@ -20,6 +20,26 @@ public:
     std::string getName();
     int getId();
 };
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class product_batch     // this is a helper class for stock management, not used in main.cpp
+{
+private:
+    product product_type;
+    int quantity;
+    static inline std::random_device rd;
+    static inline std::mt19937 gen = std::mt19937(rd());
+    
+public:
+    product_batch();
+    product_batch(product p, int qty);
+    ~product_batch();
+    product getProductType();
+    int getQuantity();
+    void setQuantity(int qty);
+
+    static product_batch generateRandomBatch(product p);
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -70,26 +90,7 @@ public:
     void print();
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class product_batch     // this is a helper class for stock management, not used in main.cpp
-{
-private:
-    product product_type;
-    int quantity;
-    static inline std::random_device rd;
-    static inline std::mt19937 gen = std::mt19937(rd());
-    
-public:
-    product_batch();
-    product_batch(product p, int qty);
-    ~product_batch();
-    product getProductType();
-    int getQuantity();
-    void setQuantity(int qty);
-
-    static product_batch generateRandomBatch(product p);
-};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 

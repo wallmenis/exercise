@@ -13,8 +13,11 @@ RUN dnf update -y && \
 ENV ORACLE_LIBS=/usr/lib/oracle/23/client64/lib
 ENV ORACLE_INCLUDES=/usr/include/oracle/23/client64
 
+RUN mkdir -p /app/src
 
-COPY . /app
+COPY ./src /app/src
+COPY ./build_script.sh /app/build_script.sh
+COPY ./conf /app/conf
 
 WORKDIR /app
 
