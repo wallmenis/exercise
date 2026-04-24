@@ -74,6 +74,42 @@ bool Database::disconnect() {
     }
 }
 
+bool Database::updateToat(toat t) {
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return false;
+    }
+    try {
+        if (getToatById(t.getId()).getId() == 0) { // if the toat doesn't exist, we insert it. Otherwise, we just update the contents.
+            std::string query = "INSERT INTO toats (id, order_id) VALUES (:id, :order_id)";
+             Statement* stmt = dbc->createStatement(query);
+            stmt->setInt(1, t.getId());
+            stmt->setInt(2, t.getOrderId());
+            logger->log("Executing query: " + query);
+            stmt->executeUpdate();
+            dbc->terminateStatement(stmt);
+        }
+        for (auto p : t.getContents()) {
+            std::string query = "UPDATE out_of_stock SET name = :name, quantity = :quantity WHERE id = :id AND toat_id = :toat_id";
+            if(getProductBatchById(p.getProductType().getId(), "out_of_stock").getQuantity() == 0) {
+                query = "INSERT INTO out_of_stock ( name, quantity, id, toat_id) VALUES ( :name, :quantity, :id, :toat_id)";
+            }
+            logger->log("Executing query: " + query);
+            Statement* stmt = dbc->createStatement(query);
+            stmt->setString(1, p.getProductType().getName());
+            stmt->setInt(2, p.getQuantity());
+            stmt->setInt(3, p.getProductType().getId());
+            stmt->setInt(4, t.getId());
+            stmt->executeUpdate();
+            dbc->terminateStatement(stmt);
+        }
+        return true;
+    }
+    catch (SQLException &e) {
+        logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
+        return false;
+    }
+}
 
 product_batch Database::getProductBatchById(int id, const std::string& table) {
     if (!isConnected) {
@@ -81,8 +117,10 @@ product_batch Database::getProductBatchById(int id, const std::string& table) {
         return product_batch();
     }
     try {
-        Statement* stmt = dbc->createStatement("SELECT name, quantity FROM " + table + " WHERE id = :id");
+        std::string query = "SELECT name, quantity FROM " + table + " WHERE id = :id";
+        Statement* stmt = dbc->createStatement(query);
         stmt->setInt(1, id);
+        logger->log("Executing query: " + query);
         ResultSet* rs = stmt->executeQuery();
 
         if (rs->next()) {
@@ -110,15 +148,11 @@ bool Database::updateProductBatch(product_batch p, const std::string& table)
     }
     try {
         std::string query = "UPDATE " + table + " SET name = :name, quantity = :quantity WHERE id = :id";
-        if (getProductBatchById(p.getProductType().getId(), table).getProductType().getId() == 0)
-        {
-            query = "INSERT INTO " + table + " (name, quantity, id) VALUES (:name, :quantity, :id)";
-        }
-        
         Statement* stmt = dbc->createStatement(query);
         stmt->setString(1, p.getProductType().getName());
         stmt->setInt(2, p.getQuantity());
         stmt->setInt(3, p.getProductType().getId());
+        logger->log("Executing query: " + query);
         stmt->executeUpdate();
         dbc->terminateStatement(stmt);
         return true;
@@ -128,6 +162,8 @@ bool Database::updateProductBatch(product_batch p, const std::string& table)
         return false;
     }
 }
+
+
 
 toat Database::getToatById(int id)
 {
@@ -139,24 +175,25 @@ toat Database::getToatById(int id)
         std::string query = "SELECT id, name, quantity FROM out_of_stock WHERE toat_id = :id";
         Statement* stmt = dbc->createStatement(query);
         stmt->setInt(1, id);
+        logger->log("Executing query: " + query);
         ResultSet* rs = stmt->executeQuery();
 
         int loops = 0;
+        // We loop through the result set and add each product to the toat. We also log an error if no products were found with the given toat_id.
+        toat t;
         while (rs->next()) {
-            int toat_id = rs->getInt(1);
             std::string name = rs->getString(2);
             int quantity = rs->getInt(3);
-            dbc->terminateStatement(stmt);
-            toat t;
-            t.addProduct(product(name, toat_id));
-            return t;
+            for (int i = 0; i < quantity; i++) {
+                t.addProduct(product(name, rs->getInt(1)));
+            }
             loops++;
         }
         dbc->terminateStatement(stmt);
         if (loops == 0) {
             logger->log("ERROR: No toat found with id " + std::to_string(id));
         }
-        return toat();
+        return t;
         
     }
     catch (SQLException &e) {

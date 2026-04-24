@@ -44,6 +44,7 @@ public:
 private:
     std::vector<product> products;
     order_status status;
+    int order_id;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,13 +52,21 @@ private:
 class toat
 {
 private:
-    std::vector<product> contents;
+    int id;
+    int order_id;
+    std::vector<product_batch> contents;
 
 public:
     toat();
     ~toat();
 
+    void addProductBatch(product_batch p);
     void addProduct(product p);
+    std::vector<product_batch> getContents();
+    int getId();
+    void setId(int new_id);
+    int getOrderId();
+    void setOrderId(int new_order_id);
     void print();
 };
 
@@ -77,6 +86,7 @@ public:
     ~product_batch();
     product getProductType();
     int getQuantity();
+    void setQuantity(int qty);
 
     static product_batch generateRandomBatch(product p);
 };

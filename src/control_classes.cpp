@@ -42,6 +42,11 @@ int product_batch::getQuantity() {
     return quantity;
 }
 
+void product_batch::setQuantity(int qty)
+{
+    quantity = qty;
+}
+
 product_batch product_batch::generateRandomBatch(product p) {
     std::uniform_int_distribution<> dis(1, 100);
     int random_qty = dis(gen);
@@ -50,7 +55,9 @@ product_batch product_batch::generateRandomBatch(product p) {
 ////////////////////////////////////////////////////////
 
 // ORDER
-order::order() : status(processing) {}
+order::order() : status(processing) {
+    order_id = 0;
+}
 order::~order() {}
 
 void order::addProduct(product p) {
@@ -73,18 +80,63 @@ void order::setStatus(order_status new_status)
 
 
 // TOAT
-toat::toat() {}
+toat::toat() {
+    id = 0;
+    order_id = 0;
+}
 toat::~toat() {}
+
+
+void toat::addProductBatch(product_batch p) {
+    contents.push_back(p);
+}
 
 void toat::addProduct(product p)
 {
-    contents.push_back(p);
+    bool found = false;
+    for (int i; i<contents.size(); i++)
+    {
+        if (contents[i].getProductType().getId() == p.getId())
+        {
+            contents[i].setQuantity(contents[i].getQuantity()+1);
+            found = true;
+        }
+    }
+    if (!found)
+    {
+        contents.push_back(product_batch(p, 1));
+    }
+}
+
+std::vector<product_batch> toat::getContents()
+{
+    return contents;
+}
+
+int toat::getId()
+{
+    return id;
+}
+
+void toat::setId(int new_id)
+{
+    id = new_id;
+}
+
+void toat::setOrderId(int new_order_id)
+{
+    order_id = new_order_id;
+}
+
+int toat::getOrderId()
+{
+    return order_id;
 }
 
 void toat::print() {
     std::cout << "Toat contents:\n";
     for (auto p : contents) {
-        std::cout << p.getName() << " (ID" << p.getId() << ")\n";
+        std::cout << p.getProductType().getName() << " (ID" << p.getProductType().getId() << ")" << "Quantity: " << p.getQuantity()  << "\n";
     }
 }
 
