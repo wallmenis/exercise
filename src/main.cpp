@@ -3,8 +3,6 @@
 #include "tui.h"
 #include <iostream>
 #include <vector>
-#include <random>
-#include <occi.h>
 #include "logger.h"
 //using namespace oracle::occi;
 //using namespace std;
