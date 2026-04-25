@@ -1,4 +1,4 @@
-FROM oraclelinux:9
+FROM oraclelinux:9 AS build_env
 
 RUN dnf update -y && \
     dnf install -y oracle-instantclient-release-23ai-el9 && \
@@ -6,8 +6,10 @@ RUN dnf update -y && \
     dnf install -y oracle-instantclient-basic &&\
     dnf install -y oracle-instantclient-devel && \
     dnf install -y oracle-instantclient-odbc && \
+    dnf install -y oracle-instantclient-sqlplus && \
     dnf install -y oracle-epel-release-el9 && \
     dnf install -y json-devel && \
+    dnf install -y jq && \
     dnf clean all
 
 COPY ./src /app/src
@@ -34,6 +36,16 @@ RUN mkdir -p /app/logs
 
 WORKDIR /app/bin
 
-RUN /app/bin/random_data_generator ; cat generator.log
+COPY ./init_database.sh /app/init_database.sh
+
+CMD ["/bin/bash"]
+
+FROM build_env AS db_init
+
+WORKDIR /app
+
+CMD ["/app/init_database.sh"]
+
+FROM build_env AS main_app
 
 CMD ["/app/bin/main"]
