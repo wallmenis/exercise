@@ -6,11 +6,11 @@
 
 using namespace oracle::occi;
 
-Database::Database(std::shared_ptr<Logger> logger) {
+Database::Database(std::shared_ptr<Logger> logger, std::string configFilePath) {
     nlohmann::json j;
     std::string configuration;
     std::stringstream configStream;
-    std::ifstream readStream("../conf/conf.json");
+    std::ifstream readStream(configFilePath);
     this->logger = logger;
 
     if (!readStream.is_open()) {
@@ -82,9 +82,9 @@ bool Database::updateStock(stock s)
     }
     try {
         for (auto p : s.getProductBatches()) {
-            std::string query = "UPDATE stock SET name = :name, quantity = :quantity WHERE id = :id";
+            std::string query = "UPDATE stock SET name = :1, quantity = :2 WHERE id = :3";
             if(getProductBatchById(p.getProductType().getId(), "stock").getQuantity() == 0) {
-                query = "INSERT INTO stock ( name, quantity, id) VALUES ( :name, :quantity, :id)";
+                query = "INSERT INTO stock ( name, quantity, id) VALUES ( :1, :2, :3)";
             }
             logger->log("Executing query: " + query);
             Statement* stmt = dbc->createStatement(query);

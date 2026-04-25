@@ -87,7 +87,7 @@ public:
     void setId(int new_id);
     int getOrderId();
     void setOrderId(int new_order_id);
-    void print();
+    std::string print();
 };
 
 

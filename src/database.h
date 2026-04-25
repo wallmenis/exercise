@@ -20,7 +20,7 @@ private:
     std::shared_ptr<Logger> logger;
 
 public:
-    Database(std::shared_ptr<Logger> logger);
+    Database(std::shared_ptr<Logger> logger, std::string configFilePath);
     ~Database();
 
     bool connect();

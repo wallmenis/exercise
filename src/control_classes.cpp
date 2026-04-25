@@ -1,5 +1,7 @@
 #include "control_classes.h"
 #include <iostream>
+#include <sstream>
+
 
 // PRODUCT
 product::product() 
@@ -133,11 +135,13 @@ int toat::getOrderId()
     return order_id;
 }
 
-void toat::print() {
-    std::cout << "Toat contents:\n";
+std::string toat::print() {
+    std::stringstream ss;
+    ss << "Toat contents:\n";
     for (auto p : contents) {
-        std::cout << p.getProductType().getName() << " (ID" << p.getProductType().getId() << ")" << "Quantity: " << p.getQuantity()  << "\n";
+        ss << p.getProductType().getName() << " (ID" << p.getProductType().getId() << ")" << "Quantity: " << p.getQuantity()  << "\n";
     }
+    return ss.str();
 }
 
 // STOCK

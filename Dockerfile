@@ -30,10 +30,10 @@ ENV ORACLE_INCLUDES=/usr/include/oracle/23/client64
 
 RUN ./build_script.sh
 
-WORKDIR /app/bin
-
 RUN mkdir -p /app/logs
 
-# RUN ./random_data_generator
+WORKDIR /app/bin
+
+RUN /app/bin/random_data_generator ; cat generator.log
 
 CMD ["/app/bin/main"]

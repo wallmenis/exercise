@@ -25,7 +25,10 @@ int main()
         "Gloves"
     };
 
-    Database db(std::make_shared<Logger>());
+    Logger logger;
+    logger.setLogFilePath("generator.log");
+    Database db(std::make_shared<Logger>(logger), "../conf/conf.json");
+    db.connect();
 
     // Generate and print 10 random numbers
     for (int i = 0; i < 10; ++i) {
