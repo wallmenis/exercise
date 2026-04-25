@@ -32,7 +32,7 @@ int main()
 
     // Generate and print 10 random numbers
     for (int i = 0; i < 10; ++i) {
-        db.updateStock(stock({product_batch(product(names[i], i), distrQuantities(gen))}));
+        db.updateStock(stock({product_batch(product(names[i], i+1), distrQuantities(gen))}));
     }
     
     db.disconnect();
