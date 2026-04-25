@@ -30,4 +30,6 @@ fi
 echo "Using: $CONTAINER_CMD"
 
 # Build the container image
-$CONTAINER_CMD build -t build_env . --progress=plain
+$CONTAINER_CMD build . --progress=plain --target build_env -t build_env
+$CONTAINER_CMD build . --progress=plain --target db_init -t db_init
+$CONTAINER_CMD build . --progress=plain --target main_app -t main_app
