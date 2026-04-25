@@ -13,8 +13,10 @@ RUN dnf update -y && \
     dnf clean all
 
 COPY ./src /app/src
-COPY ./build_script.sh /app/build_script.sh
+COPY ./container_scripts/build_script.sh /app/build_script.sh
 COPY ./conf /app/conf
+COPY ./sql /app/sql
+COPY .container_scripts/init_database.sh /app/init_database.sh
 
 RUN dnf update -y && \ 
     dnf clean all       # Update for a second time to ensure all packages are up to date and clean the cache again
@@ -35,8 +37,6 @@ RUN ./build_script.sh
 RUN mkdir -p /app/logs
 
 WORKDIR /app/bin
-
-COPY ./init_database.sh /app/init_database.sh
 
 CMD ["/bin/bash"]
 

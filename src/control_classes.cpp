@@ -80,6 +80,28 @@ void order::setStatus(order_status new_status)
     status = new_status;
 }
 
+toat order::makeOrder(stock& stock)
+{
+    toat t;
+    for (auto p : products) {
+        if (!stock.removeProduct(p)) {
+            setStatus(cancelled);
+            return toat(); // If any product is out of stock, the order cannot be completed
+        }
+        t.addProduct(p);
+    }
+    setStatus(completed); // If we successfully removed all products, we can mark the order as completed
+    return t;
+}
+int order::getOrderId()
+{
+    return order_id;
+}
+void order::setOrderId(int new_order_id)
+{
+    order_id = new_order_id;
+}
+
 
 // TOAT
 toat::toat() {

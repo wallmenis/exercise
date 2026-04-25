@@ -41,31 +41,7 @@ public:
     static product_batch generateRandomBatch(product p);
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class order {
-public:
-    enum order_status
-    {
-        processing,
-        completed,
-        cancelled
-    };
-
-    order();
-    ~order();
-
-    void addProduct(product p);
-    std::vector<product> getProducts();
-
-    order_status getStatus();
-    void setStatus(order_status new_status);
-
-private:
-    std::vector<product> products;
-    order_status status;
-    int order_id;
-};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +88,35 @@ public:
     std::vector<product_batch> getProductBatches();
     
     std::string getStockBatchesInString();
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class order {
+public:
+    enum order_status
+    {
+        processing,
+        completed,
+        cancelled
+    };
+
+    order();
+    ~order();
+
+    void addProduct(product p);
+    std::vector<product> getProducts();
+
+    order_status getStatus();
+    void setStatus(order_status new_status);
+    toat makeOrder(stock& stock);
+    int getOrderId();
+    void setOrderId(int new_order_id);
+
+private:
+    std::vector<product> products;
+    order_status status;
+    int order_id;
 };
 
 #endif
