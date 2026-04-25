@@ -26,7 +26,7 @@ int main()
     };
 
     Logger logger;
-    logger.setLogFilePath("generator.log");
+    logger.setLogFilePath("../logs/generator.log");
     Database db(std::make_shared<Logger>(logger), "../conf/conf.json");
     db.connect();
 

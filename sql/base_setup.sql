@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS stock (
 -- TOAT TABLE
 CREATE TABLE IF NOT EXISTS toat (
     id        NUMBER,
-    order_id  NUMBER NOT NULL
+    order_id  NUMBER NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -22,3 +22,4 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     PRIMARY KEY (id),
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
+EXIT;

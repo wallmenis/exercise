@@ -13,4 +13,4 @@ fi
 echo "Using: $CONTAINER_CMD"
 
 # Run the container.
-$CONTAINER_CMD run -v $(pwd)/logs:/app/logs:z -it db_init
+$CONTAINER_CMD run -v $(pwd)/logs:/app/logs:z -it --rm db_init
