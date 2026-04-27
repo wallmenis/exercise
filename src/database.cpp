@@ -74,6 +74,38 @@ bool Database::disconnect() {
     }
 }
 
+int Database::getLatestIDFromTable(std::string table)
+{
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return 0;
+    }
+    try
+    {
+        std::string query = "SELECT id FROM " + table + " ORDER BY id DESC FETCH FIRST 1 ROW ONLY";
+        logger->log("Executing query: " + query);
+        Statement* stmt = dbc->createStatement(query);
+        ResultSet* rs = stmt->executeQuery();
+        int id;
+        if (rs->next()) {
+            id = rs->getInt(1);
+            dbc->terminateStatement(stmt);
+            return id;
+        } else {
+            dbc->terminateStatement(stmt);
+            logger->log("ERROR: No toat found with id " + std::to_string(id) + " in table " + table);
+            return 0;
+        }
+        return 0;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        logger->log(e.what());
+        return 0;
+    }
+}
+
 bool Database::updateStock(stock s)
 {
     if (!isConnected) {
@@ -183,7 +215,7 @@ bool Database::updateToat(toat t) {
         }
         for (auto p : t.getContents()) {
             std::string query = "UPDATE out_of_stock SET name = :1, quantity = :2 WHERE id = :3 AND toat_id = :4";
-            if(getProductBatchById(p.getProductType().getId(), "out_of_stock").getQuantity() == 0) {
+            if(getProductBatchById(p.getProductType().getId(), "out_of_stock").getQuantity() == 0 || getToatById(t.getId()).getId() == 0) {
                 query = "INSERT INTO out_of_stock ( name, quantity, id, toat_id) VALUES ( :1, :2, :3, :4)";
             }
             logger->log("Executing query: " + query);

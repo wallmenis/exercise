@@ -26,6 +26,8 @@ public:
     bool connect();
     bool disconnect();
 
+    int getLatestIDFromTable(std::string table);
+
     bool updateStock(stock s);
     stock getStock(int start, int count);
 
