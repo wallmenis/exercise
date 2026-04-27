@@ -5,19 +5,21 @@
 #include <vector>
 #include "logger.h"
 #include <sstream>
+#include <sstream>
 //using namespace oracle::occi;
 //using namespace std;
 
 
-int main(int argc, char* argv[])
+int main(int argc, char * argv[])
 {
     Logger logger;
     logger.setLogFilePath("../logs/app.log");
     logger.log("PROGRAM STARTED");
-    std::stringstream toOrder;
-    for (int i = 0; i < argc; ++i) {
-        logger.log("Argument " + std::to_string(i) + ": " + argv[i]);
-        toOrder << argv[i] << " ";
+    std::stringstream orders;
+
+    for (int i = 0; i<argc; i++)
+    {
+        orders << argv[i];
     }
 
     try {
@@ -33,45 +35,45 @@ int main(int argc, char* argv[])
 
         stock s = db.getStock(0, -1);
         std::cout << "STOCK RETRIEVED:\n";
-        std::string output = "";
-        if (argc < 2) {
-            output = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
-            logger.log("TUI INPUT: " + output);
+        std::string input;
+        if (argc < 2)
+        {
+            input = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
         }
-        toOrder << output;
         logger.log("Stock retrieved from database.");
 
-        std::vector<int> productIDs;
-        std::string token;
+        orders << input;
 
         order o;
-        o.setOrderId(1);
-        logger.log("Order created with ID: " + std::to_string(o.getOrderId()));
-        while (std::getline(toOrder, token, ' ')) {
-            if (!token.empty()) {
-                try {
-                    int id = std::stoi(token);
-                    productIDs.push_back(id);
-                } catch (const std::invalid_argument& e) {
-                    logger.log("Invalid product ID: " + token);
-                }
-            }
-        }
-        for (auto id : productIDs) {
-            logger.log("Product ID to order: " + std::to_string(id));
-            o.addProduct(s.getProductBatches()[id].getProductType());
-        }
-        
-        
-        
-        toat t = o.makeOrder(s);
 
-        if (t.getContents().empty()) {
-            logger.log("Failed to create toat from order.");
-            std::cerr << "Failed to create toat from order.\n";
+        std::string token;
+
+        std::vector<int> productIDs;
+
+        while(std::getline(orders, token, ' ' ))
+        {
+            try
+            {
+                productIDs.emplace_back(std::stoi(token));
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+                logger.log(e.what());
+                return 1;
+            }
+            
+        }
+        for (auto i : productIDs)
+        {
+            o.addProduct(s.getProductBatches()[i].getProductType());
+        }
+        toat t = o.makeOrder(s);
+        if(t.getContents().empty())
+        {
+            logger.log("Order canceled.");
             return 1;
         }
-
         t.setId(1);
         logger.log("Created toat from stock batches.");
         logger.log("Toat details: " + t.print());
@@ -79,6 +81,7 @@ int main(int argc, char* argv[])
         db.updateToat(t);
         logger.log("Updated toat in database.");
 
+        //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
         //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
 
         //db.removeByToatId(t.getId());
