@@ -293,12 +293,13 @@ toat Database::getToatById(int id)
         return toat();
     }
 }
-
+/*
 bool Database::removeByToatId(int id){
     if (!isConnected) {
         logger->log("ERROR: Not connected to database");
         return false;
     }
+    
     try {
         std::string query = "DELETE FROM out_of_stock WHERE toat_id = :1";
         logger->log("Executing query: " + query);
@@ -312,4 +313,5 @@ bool Database::removeByToatId(int id){
         logger->log("ORACLE ERROR: " + std::string(e.getMessage()));
         return false;
     }
-}
+    
+}*/
