@@ -118,16 +118,19 @@ void toat::addProductBatch(product_batch p) {
 void toat::addProduct(product p)
 {
     bool found = false;
-    for (int i; i<contents.size(); i++)
+    for (int i = 0; i<contents.size(); i++)
     {
+        //std::cout << i << "\n";
         if (contents[i].getProductType().getId() == p.getId())
         {
+            //std::cout << i << " entered" << "\n";
             contents[i].setQuantity(contents[i].getQuantity()+1);
             found = true;
         }
     }
     if (!found)
     {
+        //std::cout << "pushed" << "\n";
         contents.push_back(product_batch(p, 1));
     }
 }
