@@ -4,23 +4,21 @@
 #include <iostream>
 #include <vector>
 #include "logger.h"
+#include <sstream>
 //using namespace oracle::occi;
 //using namespace std;
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    
     Logger logger;
     logger.setLogFilePath("../logs/app.log");
     logger.log("PROGRAM STARTED");
-
-    //std::string output;
-
-    //output = TUI::displayAndSelectPage({"Welcome to the Warehouse Management System!\nThis is a simple TUI application that demonstrates basic database operations and control classes for managing products, orders, and stock.\n\nPress 'n' to continue to the next page.", "On the next pages, you will see examples of how to create products, manage orders, and maintain stock levels using C++ classes and a database connection.\n\nPress 'n' to continue.", "Finally, you will see how to connect to an Oracle database using OCCI and perform basic operations.\n\nPress 'q' to quit."});
-
-    //std::cout << "TUI OUTPUT:\n" << output << "\n";
-    //logger.log("TUI OUTPUT: " + output);
+    std::stringstream toOrder;
+    for (int i = 0; i < argc; ++i) {
+        logger.log("Argument " + std::to_string(i) + ": " + argv[i]);
+        toOrder << argv[i] << " ";
+    }
 
     try {
         Database db(std::make_shared<Logger>(logger), "../conf/conf.json");
@@ -35,20 +33,53 @@ int main()
 
         stock s = db.getStock(0, -1);
         std::cout << "STOCK RETRIEVED:\n";
-        TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
-        logger.log("Stock retrieved from database.");
-        s.getProductBatches();
-        toat t;
-        for (auto p : s.getProductBatches()) {
-            t.addProductBatch(p);
+        std::string output = "";
+        if (argc < 2) {
+            output = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
+            logger.log("TUI INPUT: " + output);
         }
+        toOrder << output;
+        logger.log("Stock retrieved from database.");
+
+        std::vector<int> productIDs;
+        std::string token;
+
+        order o;
+        o.setOrderId(1);
+        logger.log("Order created with ID: " + std::to_string(o.getOrderId()));
+        while (std::getline(toOrder, token, ' ')) {
+            if (!token.empty()) {
+                try {
+                    int id = std::stoi(token);
+                    productIDs.push_back(id);
+                } catch (const std::invalid_argument& e) {
+                    logger.log("Invalid product ID: " + token);
+                }
+            }
+        }
+        for (auto id : productIDs) {
+            logger.log("Product ID to order: " + std::to_string(id));
+            o.addProduct(s.getProductBatches()[id].getProductType());
+        }
+        
+        
+        
+        toat t = o.makeOrder(s);
+
+        if (t.getContents().empty()) {
+            logger.log("Failed to create toat from order.");
+            std::cerr << "Failed to create toat from order.\n";
+            return 1;
+        }
+
         t.setId(1);
         logger.log("Created toat from stock batches.");
+        logger.log("Toat details: " + t.print());
 
         db.updateToat(t);
         logger.log("Updated toat in database.");
 
-        TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
+        //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
 
         db.removeByToatId(t.getId());
         logger.log("Removed toat from database.");

@@ -83,14 +83,14 @@ bool Database::updateStock(stock s)
     try {
         for (auto p : s.getProductBatches()) {
             std::string query = "UPDATE stock SET name = :1, quantity = :2 WHERE id = :3";
-            if(getProductBatchById(p.getProductType().getId(), "stock").getQuantity() == 0) {
+            if(getProductBatchById(p.second.getProductType().getId(), "stock").getQuantity() == 0) {
                 query = "INSERT INTO stock ( name, quantity, id) VALUES ( :1, :2, :3)";
             }
             logger->log("Executing query: " + query);
             Statement* stmt = dbc->createStatement(query);
-            stmt->setString(1, p.getProductType().getName());
-            stmt->setInt(2, p.getQuantity());
-            stmt->setInt(3, p.getProductType().getId());
+            stmt->setString(1, p.second.getProductType().getName());
+            stmt->setInt(2, p.second.getQuantity());
+            stmt->setInt(3, p.second.getProductType().getId());
             stmt->executeUpdate();
             dbc->terminateStatement(stmt);
         }

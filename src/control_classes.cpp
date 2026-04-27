@@ -219,13 +219,9 @@ std::vector<product> stock::getProducts() {
     return products;
 }
 
-std::vector<product_batch> stock::getProductBatches()
+std::unordered_map<int, product_batch> stock::getProductBatches()
 {
-    std::vector<product_batch> batches;
-    for (auto pair : inventory) {
-        batches.push_back(pair.second);
-    }
-    return batches;
+    return inventory;
 }
 
 std::string stock::getStockBatchesInString() {
