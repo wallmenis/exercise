@@ -2,3 +2,5 @@ conf/*
 bin/*
 logs/*
 backups/*
+presentation/~$*.pptx
+presentation/.~lock*
