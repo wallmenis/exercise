@@ -23,23 +23,25 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
 
-
 CREATE OR REPLACE TRIGGER trg_stock_to_out_of_stock
 AFTER UPDATE OF quantity ON stock
 FOR EACH ROW
-WHEN (NEW.quantity = 0)
 BEGIN
-    -- Move item to out_of_stock
-    INSERT INTO out_of_stock (id, name, quantity, toat_id)
-    VALUES (:OLD.id, :OLD.name, :OLD.quantity, NULL);
-
-    -- Remove from stock table
-    DELETE FROM stock
+    -- if item already exists in out of stock  update it
+    UPDATE out_of_stock
+    SET quantity = :NEW.quantity,
+        name     = :NEW.name
     WHERE id = :OLD.id;
+
+    -- if it doesnt exist  insert it
+    IF SQL%ROWCOUNT = 0 THEN
+        INSERT INTO out_of_stock (id, name, quantity, toat_id)
+        VALUES (:OLD.id, :NEW.name, :NEW.quantity, NULL);
+    END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Error moving stock to out_of_stock');
+        RAISE_APPLICATION_ERROR(-20002, 'Error updating out_of_stock');
 END;
 /
 EXIT;
