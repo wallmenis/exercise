@@ -83,14 +83,14 @@ bool Database::updateStock(stock s)
     try {
         for (auto p : s.getProductBatches()) {
             std::string query = "UPDATE stock SET name = :1, quantity = :2 WHERE id = :3";
-            if(getProductBatchById(p.getProductType().getId(), "stock").getQuantity() == 0) {
+            if(getProductBatchById(p.second.getProductType().getId(), "stock").getQuantity() == 0) {
                 query = "INSERT INTO stock ( name, quantity, id) VALUES ( :1, :2, :3)";
             }
             logger->log("Executing query: " + query);
             Statement* stmt = dbc->createStatement(query);
-            stmt->setString(1, p.getProductType().getName());
-            stmt->setInt(2, p.getQuantity());
-            stmt->setInt(3, p.getProductType().getId());
+            stmt->setString(1, p.second.getProductType().getName());
+            stmt->setInt(2, p.second.getQuantity());
+            stmt->setInt(3, p.second.getProductType().getId());
             stmt->executeUpdate();
             dbc->terminateStatement(stmt);
         }
@@ -173,7 +173,7 @@ bool Database::updateToat(toat t) {
     }
     try {
         if (getToatById(t.getId()).getId() == 0) { // if the toat doesn't exist, we insert it. Otherwise, we just update the contents.
-            std::string query = "INSERT INTO toats (id, order_id) VALUES (:1, :2)";
+            std::string query = "INSERT INTO toat (id, order_id) VALUES (:1, :2)";
             Statement* stmt = dbc->createStatement(query);
             stmt->setInt(1, t.getId());
             stmt->setInt(2, t.getOrderId());
@@ -293,7 +293,7 @@ toat Database::getToatById(int id)
         return toat();
     }
 }
-/*
+
 bool Database::removeByToatId(int id){
     if (!isConnected) {
         logger->log("ERROR: Not connected to database");
@@ -314,4 +314,4 @@ bool Database::removeByToatId(int id){
         return false;
     }
     
-}*/
+}

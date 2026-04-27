@@ -39,7 +39,7 @@ std::string TUI::displayAndSelectPage(std::vector<std::string> pages)
         std::cout << pages[pageIndex] << "\n";
         std::cout << "Enter 'n' for next page, 'p' for previous page, or 'q' or qStringToQuit to quit.\n";
         std::cout << "You may also enter /thingToSearchFor to search for a specific thing.\n";
-        std::cin >> input;
+        std::getline(std::cin, input);
         if (input == "n" && pageIndex < pages.size() - 1) {
             pageIndex++;
         } else if (input == "p" && pageIndex > 0) {

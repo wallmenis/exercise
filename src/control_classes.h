@@ -85,7 +85,7 @@ public:
     bool removeProduct(product p);
 
     std::vector<product> getProducts();
-    std::vector<product_batch> getProductBatches();
+    std::unordered_map<int, product_batch> getProductBatches();
     
     std::string getStockBatchesInString();
 };
