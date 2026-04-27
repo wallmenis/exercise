@@ -1,3 +1,9 @@
+DROP TABLE stock;
+DROP TABLE out_of_stock;
+DROP TABLE toat;
+DROP TRIGGER trg_stock_to_out_of_stock;
+DROP TRIGGER trg_prevent_negative_stock;
+
 -- STOCK TABLE
 CREATE TABLE IF NOT EXISTS stock (
     id        NUMBER,
@@ -19,7 +25,7 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     name      VARCHAR2(100) NOT NULL,
     quantity  NUMBER NOT NULL,
     toat_id   NUMBER,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id, toat_id),
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
 

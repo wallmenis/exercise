@@ -33,3 +33,4 @@ echo "Using: $CONTAINER_CMD"
 $CONTAINER_CMD build . --progress=plain --target build_env -t build_env
 $CONTAINER_CMD build . --progress=plain --target db_init -t db_init
 $CONTAINER_CMD build . --progress=plain --target main_app -t main_app
+$CONTAINER_CMD build . --progress=plain --target test_image -t test_image
