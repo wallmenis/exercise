@@ -50,7 +50,7 @@ int main()
 
         TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
 
-        db.removeByToatId(t.getId());
+        //db.removeByToatId(t.getId());
         logger.log("Removed toat from database.");
 
         db.disconnect();
