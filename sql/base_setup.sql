@@ -42,3 +42,4 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20002, 'Error moving stock to out_of_stock');
 END;
 /
+EXIT;
