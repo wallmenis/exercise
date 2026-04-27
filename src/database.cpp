@@ -205,7 +205,7 @@ bool Database::updateToat(toat t) {
     }
     try {
         if (getToatById(t.getId()).getId() == 0) { // if the toat doesn't exist, we insert it. Otherwise, we just update the contents.
-            std::string query = "INSERT INTO toat (id, order_id) VALUES (:1, :2)";
+            std::string query = "INSERT INTO toats (id, order_id) VALUES (:1, :2)";
             Statement* stmt = dbc->createStatement(query);
             stmt->setInt(1, t.getId());
             stmt->setInt(2, t.getOrderId());
