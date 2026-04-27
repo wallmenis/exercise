@@ -88,9 +88,9 @@ bool Database::updateStock(stock s)
             }
             logger->log("Executing query: " + query);
             Statement* stmt = dbc->createStatement(query);
-            stmt->setString(1, p.getProductType().getName());
-            stmt->setInt(2, p.getQuantity());
-            stmt->setInt(3, p.getProductType().getId());
+            stmt->setString(1, p.second.getProductType().getName());
+            stmt->setInt(2, p.second.getQuantity());
+            stmt->setInt(3, p.second.getProductType().getId());
             stmt->executeUpdate();
             dbc->terminateStatement(stmt);
         }
