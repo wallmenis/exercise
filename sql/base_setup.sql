@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     name      VARCHAR2(100) NOT NULL,
     quantity  NUMBER NOT NULL,
     toat_id   NUMBER,
-    PRIMARY KEY (id, toat_id),
+    PRIMARY KEY (id),
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
 
@@ -42,6 +42,17 @@ BEGIN
 EXCEPTION
     WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20002, 'Error updating out_of_stock');
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_prevent_negative_stock
+BEFORE UPDATE OF quantity ON stock
+FOR EACH ROW
+BEGIN
+   
+    IF :NEW.quantity < 0 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Stock cannot be negative');
+    END IF;
 END;
 /
 EXIT;
