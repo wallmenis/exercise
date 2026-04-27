@@ -17,7 +17,7 @@ int main(int argc, char * argv[])
     logger.log("PROGRAM STARTED");
     std::stringstream orders;
 
-    for (int i = 0; i<argc; i++)
+    for (int i = 1; i<argc; i++)
     {
         orders << argv[i];
     }
@@ -44,7 +44,10 @@ int main(int argc, char * argv[])
 
         orders << input;
 
+        //std::cout << input << "\n";
+
         order o;
+        o.setOrderId(db.getLatestIDFromTable("toat") + 1);
 
         std::string token;
 
@@ -54,30 +57,35 @@ int main(int argc, char * argv[])
         {
             try
             {
+                //std::cout << token << "\n";
                 productIDs.emplace_back(std::stoi(token));
             }
             catch(const std::exception& e)
             {
                 std::cerr << e.what() << '\n';
                 logger.log(e.what());
-                return 1;
             }
             
         }
         for (auto i : productIDs)
         {
+            logger.log("Added product with ID " + i);
             o.addProduct(s.getProductBatches()[i].getProductType());
         }
         toat t = o.makeOrder(s);
+        t.setOrderId(o.getOrderId());
         if(t.getContents().empty())
         {
             logger.log("Order canceled.");
             return 1;
         }
-        t.setId(1);
+        t.setId(db.getLatestIDFromTable("toat") + 1);
         logger.log("Created toat from stock batches.");
 
+        logger.log(t.print());
+
         db.updateToat(t);
+        db.updateStock(s);
         logger.log("Updated toat in database.");
 
         //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
