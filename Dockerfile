@@ -17,6 +17,7 @@ COPY ./container_scripts/build_script.sh /app/build_script.sh
 COPY ./conf /app/conf
 COPY ./sql /app/sql
 COPY ./container_scripts/init_database.sh /app/init_database.sh
+COPY ./container_scripts/run_testing.sh /app/run_testing.sh
 
 RUN dnf update -y && \ 
     dnf clean all       # Update for a second time to ensure all packages are up to date and clean the cache again
@@ -49,3 +50,9 @@ CMD ["/app/init_database.sh"]
 FROM build_env AS main_app
 
 CMD ["/app/bin/main"]
+
+FROM build_env AS test_image
+
+WORKDIR /app
+
+CMD ["/app/run_testing.sh"]

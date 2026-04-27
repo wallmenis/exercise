@@ -26,6 +26,7 @@ public:
     bool connect();
     bool disconnect();
 
+    bool getIfTableIsEmpty(std::string table);
     int getLatestIDFromTable(std::string table);
 
     bool updateStock(stock s);

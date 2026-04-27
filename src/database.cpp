@@ -74,6 +74,38 @@ bool Database::disconnect() {
     }
 }
 
+bool Database::getIfTableIsEmpty(std::string table)
+{
+    if (!isConnected) {
+        logger->log("ERROR: Not connected to database");
+        return true;
+    }
+    try
+    {
+        std::string query = "SELECT id FROM " + table + " FETCH FIRST 1 ROW ONLY";
+        logger->log("Executing query: " + query);
+        Statement* stmt = dbc->createStatement(query);
+        ResultSet* rs = stmt->executeQuery();
+        int id;
+        if (rs->next()) {
+            id = rs->getInt(1);
+            dbc->terminateStatement(stmt);
+            return false;
+        } else {
+            dbc->terminateStatement(stmt);
+            //logger->log("ERROR: No toat found with id " + std::to_string(id) + " in table " + table);
+            return true;
+        }
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        logger->log(e.what());
+        return 0;
+    }
+}
+
 int Database::getLatestIDFromTable(std::string table)
 {
     if (!isConnected) {

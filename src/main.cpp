@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 
     for (int i = 1; i<argc; i++)
     {
-        orders << argv[i];
+        orders << argv[i] << " ";
     }
     std::stringstream orders;
 
@@ -42,10 +42,11 @@ int main(int argc, char * argv[])
         logger.log("Database connection established.");
 
         stock s = db.getStock(0, -1);
-        std::cout << "STOCK RETRIEVED:\n";
-        std::string input;
+        
+        std::string input ="";
         if (argc < 2)
         {
+            std::cout << "STOCK RETRIEVED:\n";
             input = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
         }
         std::string input;
@@ -54,9 +55,9 @@ int main(int argc, char * argv[])
             input = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
         }
         logger.log("Stock retrieved from database.");
-
+        logger.log(s.getStockBatchesInString());
         orders << input;
-
+        
         //std::cout << input << "\n";
 
         order o;
@@ -87,7 +88,7 @@ int main(int argc, char * argv[])
         }
         toat t = o.makeOrder(s);
         t.setOrderId(o.getOrderId());
-        if(t.getContents().empty())
+        if(t.getContents().empty() || o.getStatus() == order::cancelled)
         {
             logger.log("Order canceled.");
             return 1;
@@ -136,6 +137,8 @@ int main(int argc, char * argv[])
         logger.log(t.print());
 
         logger.log(t.print());
+        logger.log("Stock updated:");
+        logger.log(s.getStockBatchesInString());
 
         db.updateToat(t);
         db.updateStock(s);
