@@ -60,6 +60,7 @@ int main(int argc, char * argv[])
         //std::cout << input << "\n";
 
         order o;
+        o.setOrderId(db.getLatestIDFromTable("toat") + 1);
 
         std::string token;
 
@@ -85,6 +86,7 @@ int main(int argc, char * argv[])
             o.addProduct(s.getProductBatches()[i].getProductType());
         }
         toat t = o.makeOrder(s);
+        t.setOrderId(o.getOrderId());
         if(t.getContents().empty())
         {
             logger.log("Order canceled.");
