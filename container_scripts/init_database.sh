@@ -10,5 +10,5 @@ db_connection_string=$db_connection_string1:$db_connection_string2
 connect_string="$username/$password@$db_connection_string"
 echo "Connecting to database with: $connect_string"
 sqlplus $connect_string @$(pwd)/sql/base_setup.sql &> logs/db_init.log
-cd ./bin
-./random_data_generator
+# cd ./bin
+# ./random_data_generator

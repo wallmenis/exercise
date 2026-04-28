@@ -1,8 +1,9 @@
 DROP TABLE stock;
 DROP TABLE out_of_stock;
 DROP TABLE toat;
-DROP TRIGGER trg_stock_to_out_of_stock;
 DROP TRIGGER trg_prevent_negative_stock;
+DROP PROCEDURE generate_stock_data;
+
 
 -- STOCK TABLE
 CREATE TABLE IF NOT EXISTS stock (
@@ -29,27 +30,6 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
 
-CREATE OR REPLACE TRIGGER trg_stock_to_out_of_stock
-AFTER UPDATE OF quantity ON stock
-FOR EACH ROW
-BEGIN
-    -- if item already exists in out of stock  update it
-    UPDATE out_of_stock
-    SET quantity = :NEW.quantity,
-        name     = :NEW.name
-    WHERE id = :OLD.id;
-
-    -- if it doesnt exist  insert it
-    IF SQL%ROWCOUNT = 0 THEN
-        INSERT INTO out_of_stock (id, name, quantity, toat_id)
-        VALUES (:OLD.id, :NEW.name, :NEW.quantity, NULL);
-    END IF;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Error updating out_of_stock');
-END;
-/
 
 CREATE OR REPLACE TRIGGER trg_prevent_negative_stock
 BEFORE UPDATE OF quantity ON stock
@@ -61,4 +41,40 @@ BEGIN
     END IF;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE generate_stock_data
+IS
+    TYPE product_array IS VARRAY(10) OF VARCHAR2(100);
+    products product_array := product_array(
+        'Shirt A',
+        'Shirt B',
+        'Shorts',
+        'Socks A',
+        'Socks B',
+        'Shoes A',
+        'Shoes B',
+        'Hat A',
+        'Hat B',
+        'Gloves'
+    );
+BEGIN
+    FOR i IN 1..products.COUNT LOOP
+        INSERT INTO stock (id, name, quantity)
+        VALUES (
+            i,
+            products(i),
+            TRUNC(DBMS_RANDOM.VALUE(1, 20))
+        );
+    END LOOP;
+
+    COMMIT;
+END;
+/
+
+BEGIN
+    generate_stock_data;
+END;
+/
+
 EXIT;
+
