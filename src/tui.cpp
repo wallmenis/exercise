@@ -60,6 +60,5 @@ std::string TUI::displayAndSelectPage(std::vector<std::string> pages)
             }
         }
     }
-    std::cout << input << "\n";
     return input.substr(1);
 }

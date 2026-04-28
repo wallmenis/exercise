@@ -357,7 +357,7 @@ toat Database::getToatById(int id)
         return toat();
     }
 }
-/*
+
 bool Database::removeByToatId(int id){
     if (!isConnected) {
         logger->log("ERROR: Not connected to database");
@@ -378,4 +378,4 @@ bool Database::removeByToatId(int id){
         return false;
     }
     
-}*/
+}

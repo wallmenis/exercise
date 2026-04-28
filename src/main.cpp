@@ -5,15 +5,13 @@
 #include <vector>
 #include "logger.h"
 #include <sstream>
-#include <sstream>
-#include <sstream>
 //using namespace oracle::occi;
 //using namespace std;
 
 
 int main(int argc, char * argv[])
-int main(int argc, char * argv[])
 {
+    
     Logger logger;
     logger.setLogFilePath("../logs/app.log");
     logger.log("PROGRAM STARTED");
@@ -22,12 +20,6 @@ int main(int argc, char * argv[])
     for (int i = 1; i<argc; i++)
     {
         orders << argv[i] << " ";
-    }
-    std::stringstream orders;
-
-    for (int i = 1; i<argc; i++)
-    {
-        orders << argv[i];
     }
 
     try {
@@ -47,11 +39,6 @@ int main(int argc, char * argv[])
         if (argc < 2)
         {
             std::cout << "STOCK RETRIEVED:\n";
-            input = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
-        }
-        std::string input;
-        if (argc < 2)
-        {
             input = TUI::displayAndSelectPage(TUI::pageize(s.getStockBatchesInString(), 10));
         }
         logger.log("Stock retrieved from database.");
@@ -92,49 +79,9 @@ int main(int argc, char * argv[])
         {
             logger.log("Order canceled.");
             return 1;
-
-        orders << input;
-
-        //std::cout << input << "\n";
-
-        order o;
-        o.setOrderId(db.getLatestIDFromTable("toat") + 1);
-
-        std::string token;
-
-        std::vector<int> productIDs;
-
-        while(std::getline(orders, token, ' ' ))
-        {
-            try
-            {
-                //std::cout << token << "\n";
-                productIDs.emplace_back(std::stoi(token));
-            }
-            catch(const std::exception& e)
-            {
-                std::cerr << e.what() << '\n';
-                logger.log(e.what());
-            }
-            
-        }
-        for (auto i : productIDs)
-        {
-            logger.log("Added product with ID " + i);
-            o.addProduct(s.getProductBatches()[i].getProductType());
-        }
-        toat t = o.makeOrder(s);
-        t.setOrderId(o.getOrderId());
-        if(t.getContents().empty())
-        {
-            logger.log("Order canceled.");
-            return 1;
         }
         t.setId(db.getLatestIDFromTable("toat") + 1);
         logger.log("Created toat from stock batches.");
-        logger.log("Toat details: " + t.print());
-
-        logger.log(t.print());
 
         logger.log(t.print());
         logger.log("Stock updated:");
@@ -144,8 +91,6 @@ int main(int argc, char * argv[])
         db.updateStock(s);
         logger.log("Updated toat in database.");
 
-        //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
-        //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
         //TUI::displayAndSelectPage(TUI::pageize(t.print(), 10));
 
         //db.removeByToatId(t.getId());
