@@ -1,3 +1,5 @@
+DELETE FROM stock;
+
 INSERT INTO stock VALUES (1, 'SOCKS', 3);
 INSERT INTO stock VALUES (2, 'SHOES', 3);
 INSERT INTO stock VALUES (3, 'T-SHIRT', 3);

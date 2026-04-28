@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     name      VARCHAR2(100) NOT NULL,
     quantity  NUMBER NOT NULL,
     toat_id   NUMBER,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id, toat_id),
     FOREIGN KEY (toat_id) REFERENCES toat(id)
 );
 
@@ -63,7 +63,7 @@ BEGIN
         VALUES (
             i,
             products(i),
-            TRUNC(DBMS_RANDOM.VALUE(1, 100))
+            TRUNC(DBMS_RANDOM.VALUE(1, 20))
         );
     END LOOP;
 
